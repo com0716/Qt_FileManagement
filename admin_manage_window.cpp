@@ -16,12 +16,6 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
 
     QGridLayout *pMainLayout = new QGridLayout(pWidget);
 
-    /*
-    pMdiArea = new QMdiArea();
-    pMdiArea->setBackground(Qt::NoBrush);
-    pMdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    pMdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    */
     pTableView = new QTableView();
     pTableView->setAttribute(Qt::WA_DeleteOnClose);
     pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -86,18 +80,6 @@ void AdminManageWindow::createActions()
     pExitAction->setShortcut(tr("ctrl+w"));
     connect(pExitAction, SIGNAL(triggered()), this, SLOT(onExit()));
 
-    /*
-    //3 窗口菜单行为建立
-    //3.1 窗口层叠
-    pCascadeAction = new QAction(tr("层叠"), this);
-    pCascadeAction->setShortcut(tr("ctrl+q"));
-    connect(pCascadeAction, SIGNAL(triggered()), this, SLOT(onCascade()));
-
-    //3.2 窗口并列
-    pTileAction = new QAction(tr("并列"), this);
-    pTileAction->setShortcut(tr("ctrl+r"));
-    connect(pTileAction, SIGNAL(triggered()), this, SLOT(onTile()));
-    */
 
     //4 帮助菜单行为建立
     //4.1 帮助
@@ -120,12 +102,6 @@ void AdminManageWindow::createMenus()
     pAdminMenu->addSeparator();//加入分隔符
     pAdminMenu->addAction(pExitAction);
 
-    /*//3 窗口菜单
-    pWindowMenu= menuBar()->addMenu(tr("窗口"));
-    pWindowMenu->addAction(pCascadeAction);
-    pWindowMenu->addAction(pTileAction);
-    */
-
     //4 帮助菜单
     pHelpMenu= menuBar()->addMenu(tr("帮助"));
     pHelpMenu->addAction(pHelpAction);
@@ -140,14 +116,6 @@ void AdminManageWindow::onGuestDisplay()
     {
         return ;
     }
-    /*QTableView *pTableView = new QTableView();
-
-    pMdiArea->addSubWindow(pTableView);
-    pTableView->setAttribute(Qt::WA_DeleteOnClose);
-    pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    pTableView->setWindowTitle("访客信息表");
-    pTableView->setModel(pItemModel);
-    pTableView->showMaximized();*/
 
     pTableView->setWindowTitle("访客信息表");
     pTableView->setModel(pItemModel);
@@ -160,14 +128,6 @@ void AdminManageWindow::onFileDisplay()
     {
         return ;
     }
-    /*QTableView *pTableView = new QTableView();
-
-    pMdiArea->addSubWindow(pTableView);
-    pTableView->setAttribute(Qt::WA_DeleteOnClose);
-    pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    pTableView->setWindowTitle("文件信息表");
-    pTableView->setModel(pItemModel);
-    pTableView->showMaximized();*/
 
     pTableView->setWindowTitle("文件信息表");
     pTableView->setModel(pItemModel);
@@ -176,16 +136,6 @@ void AdminManageWindow::onFileDisplay()
 void AdminManageWindow::onExit()
 {
     close();
-}
-
-void AdminManageWindow::onCascade()
-{
-    //pMdiArea->cascadeSubWindows();
-}
-
-void AdminManageWindow::onTile()
-{
-    //pMdiArea->tileSubWindows();
 }
 
 void AdminManageWindow::onHelp()

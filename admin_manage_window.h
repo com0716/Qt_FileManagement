@@ -62,11 +62,6 @@ private:
     //操作菜单及菜单行为
     QMenu *pOperatorMenu;
 
-    //窗口菜单及菜单行为
-    QMenu *pWindowMenu;
-    QAction *pCascadeAction;
-    QAction *pTileAction;
-
     //帮助菜单及菜单行为
     QMenu *pHelpMenu;
     QAction *pHelpAction;
@@ -80,9 +75,6 @@ private slots:
     void onGuestDisplay();
     void onFileDisplay();
     void onExit();
-
-    void onCascade();
-    void onTile();
 
     void onHelp();
     void onAbout();
