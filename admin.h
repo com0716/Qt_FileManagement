@@ -15,6 +15,8 @@ public:
     //查询相关的guest信息
     QStandardItemModel *guestDisplay();
     QStandardItemModel *fileDisplay();
+    void deleteFileByName(QString name);
+    void deleteGuestByName(QString name);
 
 private:
     int id;

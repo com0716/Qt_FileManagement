@@ -5,6 +5,8 @@
 #include <QVBoxLayout>
 #include <QMdiSubWindow>
 #include <QHeaderView>
+#include <QFont>
+#include <QPalette>
 
 AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
 {
@@ -14,13 +16,26 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     QWidget *pWidget = new QWidget();
     this->setCentralWidget(pWidget);
 
-    QGridLayout *pMainLayout = new QGridLayout(pWidget);
+    pTableLabel = new QLabel();
+    //字体设置
+    QFont font;
+    font.setPointSize(20);
+    pTableLabel->setFont(font);
+    //颜色设置
+    QPalette pal;
+    pal.setColor(QPalette::WindowText,Qt::red);
+    pTableLabel->setPalette(pal);
+    //居中
+    pTableLabel->setAlignment(Qt::AlignCenter);
 
+    //左侧元素
     pTableView = new QTableView();
-    pTableView->setAttribute(Qt::WA_DeleteOnClose);
-    pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    pTableView->showMaximized();
+    pTableView->setAttribute(Qt::WA_DeleteOnClose);//关闭时退出
+    pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);//禁止编辑
+    pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);//单元格自适应
+    pTableView->show();//显示
 
+    //右侧元素
     pAddBtn = new QPushButton(tr("增加条目"));
     pDeleteBtn = new QPushButton(tr("删除条目"));
     pUpdateBtn = new QPushButton(tr("更改条目"));
@@ -33,14 +48,21 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     pRightLayout->addWidget(pUpdateBtn, 2);
     pRightLayout->addWidget(pRetrieveBtn, 3);
 
-    //左侧
-    pMainLayout->addWidget(pTableView, 0, 0, 2, 1);
-    //右侧
-    pMainLayout->addLayout(pRightLayout, 0, 1);
+    //主格局
+    QGridLayout *pMainLayout = new QGridLayout(pWidget);
+    //顶部标题
+    pMainLayout->addWidget(pTableLabel, 0, 0, 1, 2);
+    //左侧格局
+    pMainLayout->addWidget(pTableView, 1, 0, 10, 1);
+    //右侧格局
+    pMainLayout->addLayout(pRightLayout, 1, 1);
 
+    //默认显示
     onGuestDisplay();
 
+    //创建功能
     createActions();
+    //创建菜单
     createMenus();
 
     //槽函数
@@ -117,7 +139,7 @@ void AdminManageWindow::onGuestDisplay()
         return ;
     }
 
-    pTableView->setWindowTitle("访客信息表");
+    pTableLabel->setText("访客信息表");
     pTableView->setModel(pItemModel);
 }
 
@@ -129,7 +151,7 @@ void AdminManageWindow::onFileDisplay()
         return ;
     }
 
-    pTableView->setWindowTitle("文件信息表");
+    pTableLabel->setText("文件信息表");
     pTableView->setModel(pItemModel);
 }
 
@@ -140,7 +162,7 @@ void AdminManageWindow::onExit()
 
 void AdminManageWindow::onHelp()
 {
-    QMessageBox::information(this, "帮助", "自学");
+    QMessageBox::information(this, "帮助", "百度一下就知道了");
 }
 
 void AdminManageWindow::onAbout()
@@ -148,9 +170,38 @@ void AdminManageWindow::onAbout()
     QMessageBox::about(this, "关于", "版权所有，免费使用");
 }
 
+
 void AdminManageWindow::onAddBtnClicked()
 {
-    int row = pTableView->currentIndex().row();
-    qDebug()<<row;
+    if (pTableLabel->text() == "访客信息表")
+    {
+
+    }
+    else if (pTableLabel->text() == "文件信息表")
+    {
+
+    }
+}
+
+void AdminManageWindow::onDeleteBtnClicked()
+{
+    if (pTableLabel->text() == "访客信息表")
+    {
+
+    }
+    else if (pTableLabel->text() == "文件信息表")
+    {
+
+    }
+}
+
+void AdminManageWindow::onUpdateBtnClicked()
+{
+
+}
+
+void AdminManageWindow::onRetrieveBtnClicked()
+{
+
 }
 

@@ -10,6 +10,7 @@
 #include <QMenuBar>
 #include <QTableView>
 #include <QPushButton>
+#include <QLabel>
 /*
 2 管理员-界面设计
     2.1 登录界面
@@ -39,7 +40,10 @@ public:
     void closeEvent(QCloseEvent *event);
 
 private:
-    //
+    //表的标题
+    QLabel *pTableLabel;
+
+    //按键
     QPushButton *pAddBtn;
     QPushButton *pDeleteBtn;
     QPushButton *pUpdateBtn;
@@ -81,6 +85,9 @@ private slots:
 
     //按键事件槽函数
     void onAddBtnClicked();
+    void onDeleteBtnClicked();
+    void onUpdateBtnClicked();
+    void onRetrieveBtnClicked();
 
 };
 
