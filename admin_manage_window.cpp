@@ -7,6 +7,10 @@
 #include <QHeaderView>
 #include <QFont>
 #include <QPalette>
+#include "guest.h"
+#include "file.h"
+#include "guest_add_dlg.h"
+#include "file_add_dlg.h"
 
 AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
 {
@@ -89,19 +93,35 @@ void AdminManageWindow::createActions()
     //1 管理菜单行为建立
     //1.1 访客信息显示
     pGuestDisplayAction = new QAction(tr("显示访客表"), this);
-    pGuestDisplayAction->setShortcut(tr("ctrl+u"));
+    pGuestDisplayAction->setShortcut(tr("ctrl+g"));
     connect(pGuestDisplayAction, SIGNAL(triggered()), this, SLOT(onGuestDisplay()));
 
     //1.2 文件信息显示
     pFileDisplayAction = new QAction(tr("显示文件表"), this);
-    pFileDisplayAction->setShortcut(tr("ctrl+d"));
+    pFileDisplayAction->setShortcut(tr("ctrl+f"));
     connect(pFileDisplayAction, SIGNAL(triggered()), this, SLOT(onFileDisplay()));
 
     //1.3 退出行为
     pExitAction = new QAction(tr("退出"), this);
-    pExitAction->setShortcut(tr("ctrl+w"));
+    pExitAction->setShortcut(tr("ctrl+e"));
     connect(pExitAction, SIGNAL(triggered()), this, SLOT(onExit()));
 
+    //2 操作菜单行为建立
+    pAddAction = new QAction(tr("增加条目"), this);
+    pAddAction->setShortcut(tr("ctrl+n"));
+    connect(pAddAction, SIGNAL(triggered()), this, SLOT(onAddBtnClicked()));
+
+    pDeleteAction = new QAction(tr("删除条目"), this);
+    pDeleteAction->setShortcut(tr("ctrl+d"));
+    connect(pDeleteAction, SIGNAL(triggered()), this, SLOT(onDeleteBtnClicked()));
+
+    pUpdateAction = new QAction(tr("更新条目"), this);
+    pUpdateAction->setShortcut(tr("ctrl+u"));
+    connect(pUpdateAction, SIGNAL(triggered()), this, SLOT(onUpdateBtnClicked()));
+
+    pRetrieveAction = new QAction(tr("查询条目"), this);
+    pRetrieveAction->setShortcut(tr("ctrl+r"));
+    connect(pRetrieveAction, SIGNAL(triggered()), this, SLOT(onRetrieveBtnClicked()));
 
     //4 帮助菜单行为建立
     //4.1 帮助
@@ -124,6 +144,13 @@ void AdminManageWindow::createMenus()
     pAdminMenu->addSeparator();//加入分隔符
     pAdminMenu->addAction(pExitAction);
 
+    //2 操作菜单
+    pOperatorMenu = menuBar()->addMenu(tr("操作"));
+    pOperatorMenu->addAction(pAddAction);
+    pOperatorMenu->addAction(pDeleteAction);
+    pOperatorMenu->addAction(pUpdateAction);
+    pOperatorMenu->addAction(pRetrieveAction);
+
     //4 帮助菜单
     pHelpMenu= menuBar()->addMenu(tr("帮助"));
     pHelpMenu->addAction(pHelpAction);
@@ -133,7 +160,7 @@ void AdminManageWindow::createMenus()
 
 void AdminManageWindow::onGuestDisplay()
 {
-    QStandardItemModel *pItemModel = pAdmin->guestDisplay();
+    QStandardItemModel *pItemModel = Guest::displayAll();
     if (pItemModel == NULL)
     {
         return ;
@@ -145,7 +172,7 @@ void AdminManageWindow::onGuestDisplay()
 
 void AdminManageWindow::onFileDisplay()
 {
-    QStandardItemModel *pItemModel = pAdmin->fileDisplay();
+    QStandardItemModel *pItemModel = File::displayAll();
     if (pItemModel == NULL)
     {
         return ;
@@ -175,11 +202,20 @@ void AdminManageWindow::onAddBtnClicked()
 {
     if (pTableLabel->text() == "访客信息表")
     {
+        GuestAddDlg guestAddDlg;
+        guestAddDlg.exec();
 
+        if (guestAddDlg.confirm())
+        {
+            Guest addGuest(guestAddDlg.getName(), guestAddDlg.getGrade(), guestAddDlg.getPassword());
+            addGuest.insertToDatabase();
+            onGuestDisplay();
+        }
     }
     else if (pTableLabel->text() == "文件信息表")
     {
-
+        FileAddDlg fileAddDlg;
+        fileAddDlg.exec();
     }
 }
 

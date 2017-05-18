@@ -65,6 +65,10 @@ private:
 
     //操作菜单及菜单行为
     QMenu *pOperatorMenu;
+    QAction *pAddAction;
+    QAction *pDeleteAction;
+    QAction *pUpdateAction;
+    QAction *pRetrieveAction;
 
     //帮助菜单及菜单行为
     QMenu *pHelpMenu;

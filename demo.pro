@@ -1,15 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-05-14T21:59:14
+# Project created by QtCreator 2017-05-18T22:44:36
 #
 #-------------------------------------------------
 
-#添加了sql之后才能使用QSqlDatabase
+# 1 添加sql库
 QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-#
+# 2 添加mysql链接库
 LIBS += -LD:\3.mysql\lib -llibmysql
 
 TARGET = demo
@@ -28,17 +28,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    sqltools.cpp \
+        guest_add_dlg.cpp \
     admin.cpp \
-    admin_manage_window.cpp
+    admin_manage_window.cpp \
+    file.cpp \
+    guest.cpp \
+    mainwindow.cpp \
+    sqltools.cpp \
+    file_add_dlg.cpp
 
-HEADERS  += mainwindow.h \
-    global_header.h \
-    sqltools.h \
+HEADERS  += guest_add_dlg.h \
     admin.h \
-    admin_manage_window.h
+    admin_manage_window.h \
+    file.h \
+    global_header.h \
+    guest.h \
+    mainwindow.h \
+    sqltools.h \
+    file_add_dlg.h
 
 DISTFILES += \
-    file_management.sql \
-    readme.txt
+    readme.txt \
+    file_management.sql

@@ -25,6 +25,8 @@ int SqlTools::connect()
         return -1;
     }
 
+    executeDml("SET NAMES utf8;");
+
     return 0;
 }
 
