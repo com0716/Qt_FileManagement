@@ -49,6 +49,9 @@ private:
     QPushButton *pUpdateBtn;
     QPushButton *pRetrieveBtn;
 
+    //图片显示区
+    QLabel *pImageLabel;
+
 
     //管理员信息
     Admin *pAdmin;
@@ -93,6 +96,7 @@ private slots:
     void onUpdateBtnClicked();
     void onRetrieveBtnClicked();
 
+    void onTableViewClicked();
 };
 
 #endif // ADMIN_MANAGE_WINDOW_H

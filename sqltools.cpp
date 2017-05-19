@@ -12,7 +12,15 @@ SqlTools::SqlTools(QObject *parent) : QObject(parent)
 
 int SqlTools::connect()
 {
-    mysqlDB = QSqlDatabase::addDatabase("QMYSQL");
+    //判断是否已经存在默认连接
+    if (mysqlDB.contains("qt_sql_default_connection"))
+    {
+        mysqlDB = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        mysqlDB = QSqlDatabase::addDatabase("QMYSQL");
+    }
 
     mysqlDB.setHostName("123.207.164.120");
     mysqlDB.setUserName("root");
@@ -39,7 +47,7 @@ int SqlTools::executeDql(const QString sql, QStandardItemModel **pItemModel)
     }
 
     //SELECT
-    QSqlQuery query;
+    QSqlQuery query(mysqlDB);
     if (!query.exec(sql))
     {
         errors = query.lastError().text();
@@ -77,11 +85,34 @@ int SqlTools::executeDql(const QString sql, QStandardItemModel **pItemModel)
     return 0;
 }
 
+QSqlQuery SqlTools::executeDql(const QString sql)
+{
+    QSqlQuery query(mysqlDB);
+    if (!query.exec(sql))
+    {
+        errors = query.lastError().text();
+        return QSqlQuery();
+    }
+
+    return query;
+}
+
 int SqlTools::executeDml(const QString sql)
 {
     //INSERT UPDATE DELETE
-    QSqlQuery query;
+    QSqlQuery query(mysqlDB);
     if (!query.exec(sql))
+    {
+        errors = query.lastError().text();
+        return -1;
+    }
+
+    return 0;
+}
+
+int SqlTools::executeDml(QSqlQuery &query)
+{
+    if (!query.exec())
     {
         errors = query.lastError().text();
         return -1;

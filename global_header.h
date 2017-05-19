@@ -11,6 +11,7 @@
 #include <QCryptographicHash>
 #include <QMainWindow>
 #include <QApplication>
+#include <QDateTime>
 
 inline QString md5(QString input)
 {
@@ -25,6 +26,13 @@ inline void moveToCenter(QMainWindow &w)
     QDesktopWidget *pDesktop = QApplication::desktop();
     w.move((pDesktop->width()-w.width())/2,
            (pDesktop->height()-w.height())/2);
+}
+
+inline QString getCurrentTime(QString type)
+{
+    //type "yyyy-MM-dd hh:mm:ss ddd"
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    return currentDateTime.toString(type);
 }
 
 #endif // GLOBAL_HEADER_H

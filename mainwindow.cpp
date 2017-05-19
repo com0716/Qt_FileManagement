@@ -58,7 +58,7 @@ void MainWindow::onLogin()
     QString password = pPasswordEdit->text().trimmed();
 
     //2 验证用户名和密码的合法性
-    if (username=="" || password=="")
+    if (username.isEmpty() || password.isEmpty())
     {
         QMessageBox::information(NULL, tr("警告"), tr("用户名或密码不能为空"));
         return ;

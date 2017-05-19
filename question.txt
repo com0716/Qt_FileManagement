@@ -1,0 +1,2 @@
+2017/5/19 9:09:38 问题解决记录
+1 QSqlDatabasePrivate::addDatabase: duplicate connection name 'qt_sql_default_connection', old connection removed.

@@ -1,6 +1,8 @@
 #include "file_add_dlg.h"
 #include <QGridLayout>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QPixmap>
 
 FileAddDlg::FileAddDlg(QWidget *parent)
     : QDialog(parent)
@@ -11,8 +13,11 @@ FileAddDlg::FileAddDlg(QWidget *parent)
     pFileNameEdit = new QLineEdit();
     pOpenFileBtn = new QPushButton(tr("打开文件"));
 
+    pPreviewLabel = new QLabel(tr("图片预览"));
+    pImageLabel = new QLabel(tr("暂无图片"));
+
     pFileDesc = new QLabel(tr("添加描述"));
-    pFileDescText = new QTextEdit();
+    pFileDescEdit = new QLineEdit();
 
     pConfirmBtn = new QPushButton(tr("确认"));
     pCancelBtn = new QPushButton(tr("取消"));
@@ -21,8 +26,10 @@ FileAddDlg::FileAddDlg(QWidget *parent)
     pMainLayout->addWidget(pFileLabel, 0, 0);
     pMainLayout->addWidget(pFileNameEdit, 0, 1);
     pMainLayout->addWidget(pOpenFileBtn, 0, 2);
-    pMainLayout->addWidget(pFileDesc, 1, 0);
-    pMainLayout->addWidget(pFileDescText, 1, 1, 1, 2);
+    pMainLayout->addWidget(pPreviewLabel, 1, 0);
+    pMainLayout->addWidget(pImageLabel, 1, 1, 1, 2);
+    pMainLayout->addWidget(pFileDesc, 2, 0);
+    pMainLayout->addWidget(pFileDescEdit, 2, 1, 1, 2);
 
     QGridLayout *pBottomLayout = new QGridLayout();
     pBottomLayout->addWidget(pConfirmBtn, 0, 0);
@@ -30,7 +37,7 @@ FileAddDlg::FileAddDlg(QWidget *parent)
     pBottomLayout->setColumnStretch(0, 1);
     pBottomLayout->setColumnStretch(1, 1);
 
-    pMainLayout->addLayout(pBottomLayout, 2, 1, 1, 2);
+    pMainLayout->addLayout(pBottomLayout, 3, 1, 1, 2);
     //设置边距
     pMainLayout->setMargin(15);
     //设置间距
@@ -59,35 +66,23 @@ QString FileAddDlg::getFileName()
     return this->fname;
 }
 
-QString FileAddDlg::getFilePath()
-{
-    return this->fpath;
-}
-
 QString FileAddDlg::getFileDesc()
 {
     return this->fdesc;
 }
 
-int FileAddDlg::getFileSize()
-{
-    return this->size;
-}
-
 void FileAddDlg::onConfirm()
 {
-    /*name = pUsernameEdit->text().trimmed();
-    grade = pGradeComboBox->currentIndex()+1;
-    password = pPasswordEdit->text().trimmed();
-    if (name == "" || password == "")
+    fname = pFileNameEdit->text();
+    fdesc = pFileDescEdit->text();
+    if (fname.isEmpty() || fdesc.isEmpty() )
     {
-        QMessageBox::information(NULL, tr("提示"), tr("访客昵称或者密码不能为空"));
+        QMessageBox::information(NULL, tr("提示"), tr("文件或者文件描述不能为空"));
     }else
     {
         isConfirmed = true;
         close();
-    }*/
-
+    }
 }
 
 void FileAddDlg::onCancel()
@@ -109,5 +104,7 @@ void FileAddDlg::onOpenFile()
 
     pFileNameEdit->setText(filename);
 
-
+    QPixmap pixmap(filename);
+    pixmap = pixmap.scaled(160, 120);
+    pImageLabel->setPixmap(pixmap);
 }

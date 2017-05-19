@@ -79,7 +79,7 @@ void GuestAddDlg::onConfirm()
     name = pUsernameEdit->text().trimmed();
     grade = pGradeComboBox->currentIndex()+1;
     password = pPasswordEdit->text().trimmed();
-    if (name == "" || password == "")
+    if (name.isEmpty() || password.isEmpty())
     {
         QMessageBox::information(NULL, tr("提示"), tr("访客昵称或者密码不能为空"));
     }else

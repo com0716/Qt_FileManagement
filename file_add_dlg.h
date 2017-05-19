@@ -1,6 +1,7 @@
 #ifndef FILE_ADD_DLG_H
 #define FILE_ADD_DLG_H
 
+#include "global_header.h"
 #include <QDialog>
 #include <QLabel>
 #include <QPushButton>
@@ -17,23 +18,22 @@ public:
 
     bool confirm();
     QString getFileName();
-    QString getFilePath();
     QString getFileDesc();
-    int getFileSize();
 
 private:
     bool isConfirmed;
-    QString fpath;
     QString fname;
     QString fdesc;
-    int size;
 
     QLabel *pFileLabel;
     QLineEdit *pFileNameEdit;
     QPushButton *pOpenFileBtn;
 
     QLabel *pFileDesc;
-    QTextEdit *pFileDescText;
+    QLineEdit *pFileDescEdit;
+
+    QLabel *pPreviewLabel;
+    QLabel *pImageLabel;
 
     QPushButton *pConfirmBtn;
     QPushButton *pCancelBtn;

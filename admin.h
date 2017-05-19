@@ -12,6 +12,8 @@ public:
     explicit Admin(QString name, QString password);
 
     bool isLogin();
+    QString getName();
+    int getId();
 
 private:
     int id;

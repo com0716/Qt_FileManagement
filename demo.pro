@@ -49,4 +49,5 @@ HEADERS  += guest_add_dlg.h \
 
 DISTFILES += \
     readme.txt \
-    file_management.sql
+    file_management.sql \
+    question.txt

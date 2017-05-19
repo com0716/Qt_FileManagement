@@ -23,7 +23,7 @@ bool Admin::isLogin()
         return false;
     }
     //1.2 执行sql语句
-    QString sql = QString("SELECT password FROM admin WHERE name='%1';").arg(this->name);
+    QString sql = QString("SELECT password, id FROM admin WHERE name='%1';").arg(this->name);
     ret = sqlTools.executeDql(sql, &pItemModel);
     if (ret < 0)
     {
@@ -41,6 +41,7 @@ bool Admin::isLogin()
 
     //2 判断结果
     const QString sqlPassword = pItemModel->index(0,0).data(0).toString();
+    this->id = pItemModel->index(0,1).data(0).toInt();
     delete pItemModel; pItemModel = NULL;
     if (sqlPassword != this->password)
     {
@@ -48,5 +49,15 @@ bool Admin::isLogin()
     }
 
     return true;
+}
+
+QString Admin::getName()
+{
+    return this->name;
+}
+
+int Admin::getId()
+{
+    return this->id;
 }
 

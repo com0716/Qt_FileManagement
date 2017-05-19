@@ -17,9 +17,11 @@ public:
 
     //数据查询语言DQL SELECT
     int executeDql(const QString sql, QStandardItemModel **pItemModel);
+    QSqlQuery executeDql(const QString sql);
 
     //数据操作语言DML INSERT UPDATE DELETE
     int executeDml(const QString sql);
+    int executeDml(QSqlQuery &query);
 
     //数据定义语言DDL -- 不做实现
     //数据控制语言DCL -- 不做实现

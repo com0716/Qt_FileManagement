@@ -7,6 +7,7 @@
 #include <QHeaderView>
 #include <QFont>
 #include <QPalette>
+#include <QPixmap>
 #include "guest.h"
 #include "file.h"
 #include "guest_add_dlg.h"
@@ -45,6 +46,9 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     pUpdateBtn = new QPushButton(tr("更改条目"));
     pRetrieveBtn = new QPushButton(tr("查询条目"));
 
+    //图片实现
+    pImageLabel = new QLabel();
+
     //界面右侧布局
     QVBoxLayout *pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(pAddBtn, 0);
@@ -60,6 +64,9 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     pMainLayout->addWidget(pTableView, 1, 0, 10, 1);
     //右侧格局
     pMainLayout->addLayout(pRightLayout, 1, 1);
+    //底部格局
+    pMainLayout->addWidget(pImageLabel, 2, 1);
+
 
     //默认显示
     onGuestDisplay();
@@ -71,6 +78,11 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
 
     //槽函数
     connect(pAddBtn, SIGNAL(clicked()), this, SLOT(onAddBtnClicked()));
+    connect(pDeleteBtn, SIGNAL(clicked()), this, SLOT(onDeleteBtnClicked()));
+    connect(pUpdateBtn, SIGNAL(clicked()), this, SLOT(onUpdateBtnClicked()));
+    connect(pRetrieveBtn, SIGNAL(clicked()), this, SLOT(onRetrieveBtnClicked()));
+
+    connect(pTableView, SIGNAL(clicked(QModelIndex)), this, SLOT(onTableViewClicked()));
 }
 
 void AdminManageWindow::closeEvent(QCloseEvent *event)
@@ -216,18 +228,60 @@ void AdminManageWindow::onAddBtnClicked()
     {
         FileAddDlg fileAddDlg;
         fileAddDlg.exec();
+
+        if (fileAddDlg.confirm())
+        {
+            QString fid;
+            fid = getCurrentTime("yyyyMMdd_hhmmss") + QString("_%1").arg(pAdmin->getId());
+            File addFile(fid, fileAddDlg.getFileName(), fileAddDlg.getFileDesc(),
+                         0, QString(""), pAdmin->getName(), 0);
+            addFile.insertToDatabase();
+            onFileDisplay();
+        }
     }
 }
 
 void AdminManageWindow::onDeleteBtnClicked()
 {
+    int row = this->pTableView->currentIndex().row();
+    if (row < 0)
+    {
+        QMessageBox::information(NULL, tr("提示"), tr("您未选中需要操作的内容，请选择后再操作"));
+        return ;
+    }
+
+    QMessageBox::StandardButton button;
+    QAbstractItemModel *pAItemModel = this->pTableView->model();
+
     if (pTableLabel->text() == "访客信息表")
     {
+        QString name = pAItemModel->data(pAItemModel->index(row, 0)).toString();
 
+        QString warnings = QString(tr("您好删除名为%1的访客？")).arg(name);
+        button = QMessageBox::question(this,
+                                       tr("提示"),
+                                       warnings,
+                                       QMessageBox::Yes | QMessageBox::No);
+        if (button == QMessageBox::Yes)
+        {
+            Guest::deleteByName(name);
+            this->onGuestDisplay();
+        }
     }
     else if (pTableLabel->text() == "文件信息表")
     {
+        QString fid = pAItemModel->data(pAItemModel->index(row, 0)).toString();
 
+        QString warnings = QString(tr("您好删除文件编号为%1的文件？")).arg(fid);
+        button = QMessageBox::question(this,
+                                       tr("提示"),
+                                       warnings,
+                                       QMessageBox::Yes | QMessageBox::No);
+        if (button == QMessageBox::Yes)
+        {
+            File::deleteById(fid);
+            this->onFileDisplay();
+        }
     }
 }
 
@@ -239,5 +293,31 @@ void AdminManageWindow::onUpdateBtnClicked()
 void AdminManageWindow::onRetrieveBtnClicked()
 {
 
+}
+
+void AdminManageWindow::onTableViewClicked()
+{
+    int row = this->pTableView->currentIndex().row();
+    if (row < 0)
+    {
+        QMessageBox::information(NULL, tr("提示"), tr("您未选中需要操作的内容，请选择后再操作"));
+        return ;
+    }
+    QAbstractItemModel *pAItemModel = this->pTableView->model();
+
+    if (pTableLabel->text() == "访客信息表")
+    {
+        return ;
+    }
+    else if (pTableLabel->text() == "文件信息表")
+    {
+        QString fid = pAItemModel->data(pAItemModel->index(row, 0)).toString();
+
+        QPixmap pixmap;
+        pixmap.loadFromData(File::getFileSrcById(fid));
+        pixmap = pixmap.scaled(160, 120);
+
+        pImageLabel->setPixmap(pixmap);
+    }
 }
 

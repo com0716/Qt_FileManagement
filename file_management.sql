@@ -41,3 +41,16 @@ size INT NOT NULL
 INSERT INTO file (fpath, fname, fdesc, date, uploader, download_count, size)
 VALUES ("root/file/", "hhx1003.txt", "hhx1003 is a boy", NOW(), "root", 0, 100);
 
+CREATE TABLE file_blob(
+fid VARCHAR(20) NOT NULL PRIMARY KEY,
+fname VARCHAR(40) NOT NULL,
+fdesc VARCHAR(256),
+fsize INT NOT NULL,
+fdate DATETIME NOT NULL,
+uploader VARCHAR(64) NOT NULL,
+download_count INT NOT NULL,
+fsrc MEDIUMBLOB NOT NULL
+);
+
+INSERT INTO file_blob (fid, fname, fdesc, fsize, fdate, uploader, download_count, fsrc)
+VALUES ("20170519_1721_1", "hello.txt", "demo", 200, NOW(), "root", 0, "Hello world!");
