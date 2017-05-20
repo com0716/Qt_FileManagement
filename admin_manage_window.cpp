@@ -12,6 +12,7 @@
 #include "file.h"
 #include "guest_add_dlg.h"
 #include "file_add_dlg.h"
+#include <QFileInfo>
 
 AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
 {
@@ -312,9 +313,20 @@ void AdminManageWindow::onTableViewClicked()
     else if (pTableLabel->text() == "文件信息表")
     {
         QString fid = pAItemModel->data(pAItemModel->index(row, 0)).toString();
+        QString ftype = pAItemModel->data(pAItemModel->index(row, 2)).toString();
 
-        QPixmap pixmap;
-        pixmap.loadFromData(File::getFileSrcById(fid));
+        QString filename = fid+"."+ftype;
+        QFile images(filename);
+        //如果存在这样的图片就直接显示，如果没有就从数据库获取
+        if (!images.exists())
+        {
+            images.open(QIODevice::ReadWrite);
+            QByteArray src = File::getFileSrcById(fid);
+            images.write(src, src.length());
+            images.close();
+        }
+
+        QPixmap pixmap(filename);
         pixmap = pixmap.scaled(160, 120);
 
         pImageLabel->setPixmap(pixmap);

@@ -54,3 +54,7 @@ fsrc MEDIUMBLOB NOT NULL
 
 INSERT INTO file_blob (fid, fname, fdesc, fsize, fdate, uploader, download_count, fsrc)
 VALUES ("20170519_1721_1", "hello.txt", "demo", 200, NOW(), "root", 0, "Hello world!");
+
+//给file_blob表添加字段 ftype
+ALTER TABLE file_blob ADD ftype VARCHAR(10) NOT NULL;
+

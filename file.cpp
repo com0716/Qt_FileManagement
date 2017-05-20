@@ -44,19 +44,21 @@ bool File::insertToDatabase()
     QVariant var(data);
     fsize = file->size();
     fname = QFileInfo(this->fname).fileName();
+    ftype = QFileInfo(this->fname).suffix();
 
 
     //2 执行sql语句
     QString sql = QString("INSERT INTO file_blob "
-                          "(fid, fname, fdesc, fsize, fdate, uploader, download_count, fsrc) "
+                          "(fid, fname, ftype, fdesc, fsize, fdate, uploader, download_count, fsrc) "
                           "VALUES "
-                          "(:fid, :fname, :fdesc, :fsize, NOW(), :uploader, :download_count, :fsrc);");
+                          "(:fid, :fname, :ftype, :fdesc, :fsize, NOW(), :uploader, :download_count, :fsrc);");
     QSqlQuery query;
     query.exec("SET NAMES utf8;");
 
     query.prepare(sql);
     query.bindValue(":fid", this->fid);
     query.bindValue(":fname", this->fname);
+    query.bindValue(":ftype", this->ftype);
     query.bindValue(":fdesc", this->fdesc);
     query.bindValue(":fsize", this->fsize);
     query.bindValue(":uploader", this->uploader);
@@ -121,7 +123,7 @@ QStandardItemModel *File::displayAll()
         return NULL;
     }
     //1.2 执行sql语句
-    QString sql = "SELECT fid, fname, fdesc, fsize, fdate, uploader, download_count FROM file_blob;";
+    QString sql = "SELECT fid, fname, ftype, fdesc, fsize, fdate, uploader, download_count FROM file_blob;";
     ret = sqlTools.executeDql(sql, &pItemModel);
     if (ret < 0)
     {
@@ -139,11 +141,12 @@ QStandardItemModel *File::displayAll()
 
     pItemModel->setHeaderData(0, Qt::Horizontal, tr("文件编号"));
     pItemModel->setHeaderData(1, Qt::Horizontal, tr("文件名"));
-    pItemModel->setHeaderData(2, Qt::Horizontal, tr("文件描述"));
-    pItemModel->setHeaderData(3, Qt::Horizontal, tr("文件大小"));
-    pItemModel->setHeaderData(4, Qt::Horizontal, tr("上传时间"));
-    pItemModel->setHeaderData(5, Qt::Horizontal, tr("上传人"));
-    pItemModel->setHeaderData(6, Qt::Horizontal, tr("下载次数"));
+    pItemModel->setHeaderData(2, Qt::Horizontal, tr("文件类型"));
+    pItemModel->setHeaderData(3, Qt::Horizontal, tr("文件描述"));
+    pItemModel->setHeaderData(4, Qt::Horizontal, tr("文件大小"));
+    pItemModel->setHeaderData(5, Qt::Horizontal, tr("上传时间"));
+    pItemModel->setHeaderData(6, Qt::Horizontal, tr("上传人"));
+    pItemModel->setHeaderData(7, Qt::Horizontal, tr("下载次数"));
 
     return pItemModel;
 }

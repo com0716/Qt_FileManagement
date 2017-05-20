@@ -21,6 +21,7 @@ public:
 private:
     QString fid;
     QString fname;
+    QString ftype;
     QString fdesc;
     int fsize;
     QString fdate;
