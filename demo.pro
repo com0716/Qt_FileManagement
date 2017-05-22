@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     guest.cpp \
     mainwindow.cpp \
     sqltools.cpp \
-    file_add_dlg.cpp
+    file_add_dlg.cpp \
+    page.cpp
 
 HEADERS  += guest_add_dlg.h \
     admin.h \
@@ -45,7 +46,8 @@ HEADERS  += guest_add_dlg.h \
     guest.h \
     mainwindow.h \
     sqltools.h \
-    file_add_dlg.h
+    file_add_dlg.h \
+    page.h
 
 DISTFILES += \
     readme.txt \

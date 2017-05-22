@@ -11,6 +11,15 @@
 #include <QTableView>
 #include <QPushButton>
 #include <QLabel>
+#include <QComboBox>
+
+//可操作表单类型定义
+enum {
+    CURRENT_TABLE_GUEST = 0x00,
+#define CURRENT_TABLE_GUEST CURRENT_TABLE_GUEST
+    CURRENT_TABLE_FILE,
+#define CURRENT_TABLE_FILE CURRENT_TABLE_FILE
+};
 /*
 2 管理员-界面设计
     2.1 登录界面
@@ -40,6 +49,7 @@ public:
     void closeEvent(QCloseEvent *event);
 
 private:
+    unsigned int uCurrentTableId;
     //表的标题
     QLabel *pTableLabel;
 
@@ -48,6 +58,13 @@ private:
     QPushButton *pDeleteBtn;
     QPushButton *pUpdateBtn;
     QPushButton *pRetrieveBtn;
+
+    //分页按键
+    QPushButton *pFirstPageBtn;
+    QPushButton *pPrePageBtn;
+    QPushButton *pNextPageBtn;
+    QPushButton *pLastPageBtn;
+    QComboBox *pJumpToPageComboBox;
 
     //图片显示区
     QLabel *pImageLabel;
@@ -95,6 +112,12 @@ private slots:
     void onDeleteBtnClicked();
     void onUpdateBtnClicked();
     void onRetrieveBtnClicked();
+
+    void onFirstPageBtnClicked();
+    void onPrePageBtnClicked();
+    void onNextPageBtnClicked();
+    void onLastPageBtnClicked();
+    void onJumpToPageComboBoxIndexChanged();
 
     void onTableViewClicked();
 };

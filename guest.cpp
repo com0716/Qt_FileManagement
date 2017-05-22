@@ -1,6 +1,8 @@
 #include "guest.h"
 #include "sqltools.h"
+#include <QSqlQuery>
 
+Page Guest::fpage;
 
 Guest::Guest(QObject *parent) : QObject(parent)
 {
@@ -88,7 +90,9 @@ QStandardItemModel *Guest::displayAll()
         return NULL;
     }
     //1.2 执行sql语句
-    QString sql = "SELECT name, grade, password FROM guest;";
+    QString sql = QString("SELECT name, grade, password FROM guest limit %1, %2;")
+                        .arg((fpage.getCurrentPage()-1)*fpage.getPageSize())
+                        .arg(fpage.getPageSize());
     ret = sqlTools.executeDql(sql, &pItemModel);
     if (ret < 0)
     {
@@ -109,4 +113,40 @@ QStandardItemModel *Guest::displayAll()
     pItemModel->setHeaderData(2, Qt::Horizontal, tr("密码"));
 
     return pItemModel;
+}
+
+void Guest::getPageInfo()
+{
+    SqlTools sqlTools;
+    int ret = sqlTools.connect();
+    if (ret < 0)
+    {
+        QMessageBox::information(NULL, "错误", sqlTools.getErrors());
+        return ;
+    }
+    QString sql = QString("SELECT COUNT(name) FROM guest;");
+    QSqlQuery query = sqlTools.executeDql(sql);
+
+    sqlTools.disconnect();
+
+    if (query.next())
+    {
+        int totalCount = query.value(0).toInt();
+        fpage.setTotalCount(totalCount);
+    }
+}
+
+void Guest::setCurrentPage(unsigned int page)
+{
+    fpage.setCurrentPage(page);
+}
+
+unsigned int Guest::getCurrentPage()
+{
+    return fpage.getCurrentPage();
+}
+
+unsigned int Guest::getMaxPage()
+{
+    return fpage.getMaxPage();
 }

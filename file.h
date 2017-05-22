@@ -5,6 +5,7 @@
 #include "global_header.h"
 #include <QStandardItemModel>
 #include <QByteArray>
+#include "page.h"
 
 class File : public QObject
 {
@@ -17,6 +18,11 @@ public:
     static bool deleteById(QString fid);
     static QStandardItemModel* displayAll();
     static QByteArray getFileSrcById(QString fid);
+    static void getPageInfo();
+    static void setCurrentPage(unsigned int page);
+    static unsigned int getCurrentPage();
+    static unsigned int getMaxPage();
+
 
 private:
     QString fid;
@@ -27,6 +33,8 @@ private:
     QString fdate;
     QString uploader;
     int downloadCount;
+
+    static Page fpage;
 };
 
 #endif // FILE_H

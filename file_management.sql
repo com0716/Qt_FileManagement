@@ -58,3 +58,14 @@ VALUES ("20170519_1721_1", "hello.txt", "demo", 200, NOW(), "root", 0, "Hello wo
 //给file_blob表添加字段 ftype
 ALTER TABLE file_blob ADD ftype VARCHAR(10) NOT NULL;
 
+//file_blob表的自我复制
+
+//远程数据库备份
+一般表的备份mysqldump -h 123.207.164.120 -u root -p --database file_management >D:file_management.sql
+含有blob字段的需要添加参数-–hex-blob进行备份
+mysqldump -h 123.207.164.120 -u root -p --database file_management --hex-blob>D:file_management.sql
+//恢复
+mysql -u root -p --database file_management < file_management.sql
+
+
+

@@ -22,6 +22,9 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     QWidget *pWidget = new QWidget();
     this->setCentralWidget(pWidget);
 
+    //默认显示Table
+    uCurrentTableId = CURRENT_TABLE_FILE;
+
     pTableLabel = new QLabel();
     //字体设置
     QFont font;
@@ -47,6 +50,13 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     pUpdateBtn = new QPushButton(tr("更改条目"));
     pRetrieveBtn = new QPushButton(tr("查询条目"));
 
+    //分页实现
+    pFirstPageBtn = new QPushButton(tr("首页"));
+    pPrePageBtn = new QPushButton(tr("上一页"));
+    pNextPageBtn = new QPushButton(tr("下一页"));
+    pLastPageBtn = new QPushButton(tr("尾页"));
+    pJumpToPageComboBox = new QComboBox();
+
     //图片实现
     pImageLabel = new QLabel();
 
@@ -68,6 +78,13 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     //底部格局
     pMainLayout->addWidget(pImageLabel, 2, 1);
 
+    //分页布局
+    pMainLayout->addWidget(pFirstPageBtn, 3, 1);
+    pMainLayout->addWidget(pPrePageBtn, 4, 1);
+    pMainLayout->addWidget(pNextPageBtn, 5, 1);
+    pMainLayout->addWidget(pLastPageBtn, 6, 1);
+    pMainLayout->addWidget(pJumpToPageComboBox, 7, 1);
+
 
     //默认显示
     onGuestDisplay();
@@ -82,6 +99,12 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     connect(pDeleteBtn, SIGNAL(clicked()), this, SLOT(onDeleteBtnClicked()));
     connect(pUpdateBtn, SIGNAL(clicked()), this, SLOT(onUpdateBtnClicked()));
     connect(pRetrieveBtn, SIGNAL(clicked()), this, SLOT(onRetrieveBtnClicked()));
+
+    connect(pFirstPageBtn, SIGNAL(clicked()), this, SLOT(onFirstPageBtnClicked()));
+    connect(pPrePageBtn, SIGNAL(clicked()), this, SLOT(onPrePageBtnClicked()));
+    connect(pNextPageBtn, SIGNAL(clicked()), this, SLOT(onNextPageBtnClicked()));
+    connect(pLastPageBtn, SIGNAL(clicked()), this, SLOT(onLastPageBtnClicked()));
+    connect(pJumpToPageComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onJumpToPageComboBoxIndexChanged()));
 
     connect(pTableView, SIGNAL(clicked(QModelIndex)), this, SLOT(onTableViewClicked()));
 }
@@ -173,26 +196,92 @@ void AdminManageWindow::createMenus()
 
 void AdminManageWindow::onGuestDisplay()
 {
+    unsigned int maxPage = Guest::getMaxPage();
+    unsigned int currentPage = Guest::getCurrentPage();
+    Guest::getPageInfo();
+    if (maxPage != Guest::getMaxPage())
+    {
+        this->uCurrentTableId = CURRENT_TABLE_FILE;
+    }
+
     QStandardItemModel *pItemModel = Guest::displayAll();
     if (pItemModel == NULL)
     {
         return ;
     }
 
-    pTableLabel->setText("访客信息表");
     pTableView->setModel(pItemModel);
+
+    //如果当前的表是FILE，就需要改变的内容
+    if (this->uCurrentTableId == CURRENT_TABLE_FILE)
+    {
+        this->uCurrentTableId = CURRENT_TABLE_GUEST;
+
+        pTableLabel->setText("访客信息表");
+        //设置image label不显示图片
+        pImageLabel->setPixmap(QPixmap());
+
+        pJumpToPageComboBox->setCurrentIndex(-1);
+        while (maxPage--)
+        {
+            pJumpToPageComboBox->removeItem(0);
+        }
+
+        int max = Guest::getMaxPage();
+        for (int x=1; x<=max; x++)
+        {
+            pJumpToPageComboBox->addItem(QString("%1/%2")
+                                        .arg(x).arg(max));
+        }
+        Guest::setCurrentPage(currentPage);
+        pJumpToPageComboBox->setCurrentIndex(Guest::getCurrentPage()-1);
+    }
+
+    this->onTableViewClicked();
 }
 
 void AdminManageWindow::onFileDisplay()
 {
+    unsigned int maxPage = File::getMaxPage();
+    unsigned int currentPage = File::getCurrentPage();
+    File::getPageInfo();
+    if (maxPage != File::getMaxPage())
+    {
+        this->uCurrentTableId = CURRENT_TABLE_GUEST;
+    }
+
     QStandardItemModel *pItemModel = File::displayAll();
     if (pItemModel == NULL)
     {
         return ;
     }
 
-    pTableLabel->setText("文件信息表");
     pTableView->setModel(pItemModel);
+
+    //如果当前的表是FILE，就需要改变的内容
+    if (this->uCurrentTableId == CURRENT_TABLE_GUEST)
+    {
+        this->uCurrentTableId = CURRENT_TABLE_FILE;
+
+        pTableLabel->setText("文件信息表");
+
+        pJumpToPageComboBox->setCurrentIndex(-1);
+        while (maxPage--)
+        {
+            pJumpToPageComboBox->removeItem(0);
+        }
+
+        int max = File::getMaxPage();
+        for (int x=1; x<=max; x++)
+        {
+            pJumpToPageComboBox->addItem(QString("第%1页/共%2页")
+                                        .arg(x).arg(max));
+        }
+        File::setCurrentPage(currentPage);
+        pJumpToPageComboBox->setCurrentIndex(File::getCurrentPage()-1);
+    }
+
+    this->onTableViewClicked();
 }
 
 void AdminManageWindow::onExit()
@@ -213,7 +302,7 @@ void AdminManageWindow::onAbout()
 
 void AdminManageWindow::onAddBtnClicked()
 {
-    if (pTableLabel->text() == "访客信息表")
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
         GuestAddDlg guestAddDlg;
         guestAddDlg.exec();
@@ -225,7 +314,7 @@ void AdminManageWindow::onAddBtnClicked()
             onGuestDisplay();
         }
     }
-    else if (pTableLabel->text() == "文件信息表")
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
     {
         FileAddDlg fileAddDlg;
         fileAddDlg.exec();
@@ -254,7 +343,7 @@ void AdminManageWindow::onDeleteBtnClicked()
     QMessageBox::StandardButton button;
     QAbstractItemModel *pAItemModel = this->pTableView->model();
 
-    if (pTableLabel->text() == "访客信息表")
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
         QString name = pAItemModel->data(pAItemModel->index(row, 0)).toString();
 
@@ -269,7 +358,7 @@ void AdminManageWindow::onDeleteBtnClicked()
             this->onGuestDisplay();
         }
     }
-    else if (pTableLabel->text() == "文件信息表")
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
     {
         QString fid = pAItemModel->data(pAItemModel->index(row, 0)).toString();
 
@@ -296,26 +385,112 @@ void AdminManageWindow::onRetrieveBtnClicked()
 
 }
 
+void AdminManageWindow::onFirstPageBtnClicked()
+{
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
+    {
+
+    }
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
+    {
+        //File::setCurrentPage(1);
+        //onFileDisplay();
+        pJumpToPageComboBox->setCurrentIndex(0);
+    }
+}
+
+void AdminManageWindow::onPrePageBtnClicked()
+{
+    if (pJumpToPageComboBox->currentIndex() == 0)
+    {
+        return ;
+    }
+
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
+    {
+
+    }
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
+    {
+        //File::setCurrentPage(File::getCurrentPage()-1);
+        //onFileDisplay();
+        pJumpToPageComboBox->setCurrentIndex(File::getCurrentPage()-2);
+    }
+}
+
+void AdminManageWindow::onNextPageBtnClicked()
+{
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
+    {
+
+    }
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
+    {
+        //File::setCurrentPage(File::getCurrentPage()+1);
+        //onFileDisplay();
+        if (File::getCurrentPage() == File::getMaxPage())
+        {
+            return ;
+        }
+        pJumpToPageComboBox->setCurrentIndex(File::getCurrentPage());
+    }
+}
+
+void AdminManageWindow::onLastPageBtnClicked()
+{
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
+    {
+
+    }
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
+    {
+        //File::setCurrentPage(File::getMaxPage());
+        //onFileDisplay();
+        pJumpToPageComboBox->setCurrentIndex(File::getMaxPage()-1);
+    }
+}
+
+void AdminManageWindow::onJumpToPageComboBoxIndexChanged()
+{
+    int currentPage = pJumpToPageComboBox->currentIndex()+1;
+    if (currentPage <= 0)
+    {
+        return ;
+    }
+
+    qDebug()<<currentPage;
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
+    {
+
+    }
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
+    {
+        File::setCurrentPage(currentPage);
+        onFileDisplay();
+    }
+}
+
 void AdminManageWindow::onTableViewClicked()
 {
     int row = this->pTableView->currentIndex().row();
-    if (row < 0)
-    {
-        QMessageBox::information(NULL, tr("提示"), tr("您未选中需要操作的内容，请选择后再操作"));
-        return ;
-    }
     QAbstractItemModel *pAItemModel = this->pTableView->model();
 
-    if (pTableLabel->text() == "访客信息表")
+    if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
         return ;
     }
-    else if (pTableLabel->text() == "文件信息表")
+    else if (uCurrentTableId == CURRENT_TABLE_FILE)
     {
+        //如果还没有选择就默认是第一个
+        if (row < 0)
+        {
+            row = 0;
+        }
+
         QString fid = pAItemModel->data(pAItemModel->index(row, 0)).toString();
         QString ftype = pAItemModel->data(pAItemModel->index(row, 2)).toString();
 
-        QString filename = fid+"."+ftype;
+        QString filename = "cache/"+fid+"."+ftype;
         QFile images(filename);
         //如果存在这样的图片就直接显示，如果没有就从数据库获取
         if (!images.exists())
@@ -327,7 +502,7 @@ void AdminManageWindow::onTableViewClicked()
         }
 
         QPixmap pixmap(filename);
-        pixmap = pixmap.scaled(160, 120);
+        pixmap = pixmap.scaled(120, 90);
 
         pImageLabel->setPixmap(pixmap);
     }

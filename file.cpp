@@ -7,6 +7,8 @@
 #include <QIODevice>
 #include <QVariant>
 
+Page File::fpage;
+
 File::File(QObject *parent) : QObject(parent)
 {
 
@@ -123,7 +125,11 @@ QStandardItemModel *File::displayAll()
         return NULL;
     }
     //1.2 执行sql语句
-    QString sql = "SELECT fid, fname, ftype, fdesc, fsize, fdate, uploader, download_count FROM file_blob;";
+    QString sql = QString ("SELECT fid, fname, ftype, fdesc, fsize, fdate, "
+                           "uploader, download_count FROM file_blob "
+                           "ORDER BY fdate limit %1, %2;")
+                            .arg((fpage.getCurrentPage()-1)*fpage.getPageSize())
+                            .arg(fpage.getPageSize());
     ret = sqlTools.executeDql(sql, &pItemModel);
     if (ret < 0)
     {
@@ -176,4 +182,40 @@ QByteArray File::getFileSrcById(QString fid)
     }
 
     return NULL;
+}
+
+void File::getPageInfo()
+{
+    SqlTools sqlTools;
+    int ret = sqlTools.connect();
+    if (ret < 0)
+    {
+        QMessageBox::information(NULL, "错误", sqlTools.getErrors());
+        return ;
+    }
+    QString sql = QString("SELECT COUNT(fid) FROM file_blob;");
+    QSqlQuery query = sqlTools.executeDql(sql);
+
+    sqlTools.disconnect();
+
+    if (query.next())
+    {
+        int totalCount = query.value(0).toInt();
+        fpage.setTotalCount(totalCount);
+    }
+}
+
+void File::setCurrentPage(unsigned int page)
+{
+    fpage.setCurrentPage(page);
+}
+
+unsigned int File::getCurrentPage()
+{
+    return fpage.getCurrentPage();
+}
+
+unsigned int File::getMaxPage()
+{
+    return fpage.getMaxPage();
 }
