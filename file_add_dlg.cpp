@@ -56,6 +56,14 @@ FileAddDlg::~FileAddDlg()
 
 }
 
+void FileAddDlg::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key()==Qt::Key_Return || event->key()==Qt::Key_Enter)
+    {
+        onConfirm();
+    }
+}
+
 bool FileAddDlg::confirm()
 {
     return this->isConfirmed;

@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QKeyEvent>
 
 class GuestAddDlg : public QDialog
 {
@@ -15,6 +16,8 @@ class GuestAddDlg : public QDialog
 public:
     GuestAddDlg(QWidget *parent = 0);
     ~GuestAddDlg();
+
+    void keyPressEvent(QKeyEvent *event);
 
     bool confirm();
     QString getName();

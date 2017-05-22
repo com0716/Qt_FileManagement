@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QLineEdit>
+#include <QKeyEvent>
 
 class FileAddDlg : public QDialog
 {
@@ -15,6 +16,8 @@ class FileAddDlg : public QDialog
 public:
     FileAddDlg(QWidget *parent = 0);
     ~FileAddDlg();
+
+    void keyPressEvent(QKeyEvent *event);
 
     bool confirm();
     QString getFileName();

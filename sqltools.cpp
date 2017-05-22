@@ -22,8 +22,8 @@ int SqlTools::connect()
         mysqlDB = QSqlDatabase::addDatabase("QMYSQL");
     }
 
-    mysqlDB.setHostName("localhost");
-    //mysqlDB.setHostName("123.207.164.120");
+    //mysqlDB.setHostName("localhost");
+    mysqlDB.setHostName("123.207.164.120");
     mysqlDB.setUserName("root");
     mysqlDB.setPassword("com0716");
     mysqlDB.setDatabaseName("file_management");

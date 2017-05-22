@@ -87,7 +87,7 @@ void MainWindow::onReset()
     pPasswordEdit->setText("");
 }
 
-//键盘时间捕捉
+//键盘事件捕捉
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key()==Qt::Key_Return || event->key()==Qt::Key_Enter)
