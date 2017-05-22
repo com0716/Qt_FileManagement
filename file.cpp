@@ -127,7 +127,7 @@ QStandardItemModel *File::displayAll()
     //1.2 执行sql语句
     QString sql = QString ("SELECT fid, fname, ftype, fdesc, fsize, fdate, "
                            "uploader, download_count FROM file_blob "
-                           "ORDER BY fdate limit %1, %2;")
+                           "ORDER BY fdate DESC LIMIT %1, %2;")
                             .arg((fpage.getCurrentPage()-1)*fpage.getPageSize())
                             .arg(fpage.getPageSize());
     ret = sqlTools.executeDql(sql, &pItemModel);

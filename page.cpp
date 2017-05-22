@@ -3,7 +3,7 @@
 
 Page::Page(QObject *parent) : QObject(parent)
 {
-    this->pageSize = 2;
+    this->pageSize = 20;
     this->totalCount = 0;
     this->currentPage = 1;
     this->maxPage = 0;

@@ -25,7 +25,7 @@ AdminManageWindow::AdminManageWindow(Admin *pAdmin) : pAdmin(pAdmin)
     //默认显示Table
     uCurrentTableId = CURRENT_TABLE_FILE;
 
-    pTableLabel = new QLabel();
+    pTableLabel = new QLabel("文件信息表");
     //字体设置
     QFont font;
     font.setPointSize(20);
@@ -217,9 +217,13 @@ void AdminManageWindow::onGuestDisplay()
     {
         this->uCurrentTableId = CURRENT_TABLE_GUEST;
 
-        pTableLabel->setText("访客信息表");
-        //设置image label不显示图片
-        pImageLabel->setPixmap(QPixmap());
+        if (pTableLabel->text() == "文件信息表")
+        {
+            pTableLabel->setText("访客信息表");
+            //设置image label不显示图片
+            pImageLabel->setPixmap(QPixmap());
+            maxPage = File::getMaxPage();
+        }
 
         pJumpToPageComboBox->setCurrentIndex(-1);
         while (maxPage--)
@@ -263,7 +267,11 @@ void AdminManageWindow::onFileDisplay()
     {
         this->uCurrentTableId = CURRENT_TABLE_FILE;
 
-        pTableLabel->setText("文件信息表");
+        if (pTableLabel->text() == "访客信息表")
+        {
+            pTableLabel->setText("文件信息表");
+            maxPage = Guest::getMaxPage();
+        }
 
         pJumpToPageComboBox->setCurrentIndex(-1);
         while (maxPage--)
@@ -389,7 +397,7 @@ void AdminManageWindow::onFirstPageBtnClicked()
 {
     if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
-
+        pJumpToPageComboBox->setCurrentIndex(0);
     }
     else if (uCurrentTableId == CURRENT_TABLE_FILE)
     {
@@ -408,7 +416,7 @@ void AdminManageWindow::onPrePageBtnClicked()
 
     if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
-
+        pJumpToPageComboBox->setCurrentIndex(Guest::getCurrentPage()-2);
     }
     else if (uCurrentTableId == CURRENT_TABLE_FILE)
     {
@@ -422,6 +430,11 @@ void AdminManageWindow::onNextPageBtnClicked()
 {
     if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
+        if (Guest::getCurrentPage() == Guest::getMaxPage())
+        {
+            return ;
+        }
+        pJumpToPageComboBox->setCurrentIndex(Guest::getCurrentPage());
 
     }
     else if (uCurrentTableId == CURRENT_TABLE_FILE)
@@ -440,7 +453,7 @@ void AdminManageWindow::onLastPageBtnClicked()
 {
     if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
-
+        pJumpToPageComboBox->setCurrentIndex(Guest::getMaxPage()-1);
     }
     else if (uCurrentTableId == CURRENT_TABLE_FILE)
     {
@@ -458,10 +471,10 @@ void AdminManageWindow::onJumpToPageComboBoxIndexChanged()
         return ;
     }
 
-    qDebug()<<currentPage;
     if (uCurrentTableId == CURRENT_TABLE_GUEST)
     {
-
+        Guest::setCurrentPage(currentPage);
+        onGuestDisplay();
     }
     else if (uCurrentTableId == CURRENT_TABLE_FILE)
     {
